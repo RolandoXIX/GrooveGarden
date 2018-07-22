@@ -1,10 +1,9 @@
 from django.db import models
-from django.utils.timezone import datetime, timedelta
 
 
 class Sala(models.Model):
     nombre = models.CharField(max_length=200)
-    descripcion = models.TextField(max_length=1000)
+    descripcion = models.TextField(max_length=1000, null=True, blank=True)
 
     def __str__(self):
         return self.nombre
@@ -40,16 +39,7 @@ class Horarios(models.Model):
 class Reserva(models.Model):
     sala = models.ForeignKey(Sala, on_delete=models.SET_NULL, null=True)
     dia = models.DateField()
-
-    def horarios():
-        hora = timedelta(hours=0, minutes=0)
-        horarios = []
-        for i in range(0, 1440, 30):
-            horarios.append((i, hora))
-            hora += timedelta(minutes=30)
-        return horarios
-
-    horarios = models.CharField(max_length=4, choices=horarios() )
+    horarios = models.TimeField()
 
     def __str__(self):
         return '%s - %s' % (self.sala, self.dia)
