@@ -23,17 +23,20 @@
     <header>
       <!-- Fixed navbar -->
       <nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark">
-        <a class="navbar-brand" href="#">Fixed navbar</a>
+        <a class="navbar-brand" href="#">Groove Garden</a>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
           <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="navbarCollapse">
           <ul class="navbar-nav mr-auto">
             <li class="nav-item {% if active == 'inicio' %}active{% endif %}">
-              <a class="nav-link" href="/salas/">INICIO</a>
+              <a class="nav-link" href="{% url 'inicio' %}">INICIO</a>
             </li>
             <li class="nav-item {% if active == 'promociones' %}active{% endif %}">
-              <a class="nav-link" href="/salas/promociones">PROMOCIONES</a>
+              <a class="nav-link" href="{% url 'promociones' %}">PROMOCIONES</a>
+            </li>
+             <li class="nav-item {% if active == 'nueva_reserva' %}active{% endif %}">
+              <a class="nav-link" href="{% url 'reserva' %}">RESERVA</a>
             </li>
           </ul>
           <form class="form-inline mt-2 mt-md-0">
@@ -54,7 +57,7 @@
 
     <footer class="footer">
       <div class="container">
-        <span class="text-muted">Place sticky footer content here.</span>
+        <span class="text-muted"></span>
       </div>
     </footer>
 

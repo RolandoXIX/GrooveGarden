@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<br>
+<br>
+<br>
+<br>
+
+<p class="lead">Se realizará la siguiente reserva:</p><br>
+
+<table style="width:50%">
+  <tr>
+    <td>Fecha:</td>
+    <td>{{ date }}</td>
+  </tr>
+  <tr>
+    <td>Duracion:</td>
+    <td>{{ tiempo }} Hs.</td>
+  </tr>
+  <tr>
+    <td>Inicio:</td>
+    <td>{{ desde_str }}</td>
+  </tr>
+  <tr>
+    <td>Fin:</td>
+    <td>{{ hasta_str }}</td>
+  </tr>
+</table>
+
+<br>
+<br>
+<input type="button" onclick="location.href='/reserva_confirmada/';" value="Confirmar Reserva" />
+
+{% endblock %}

@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<br>
+<br>
+<br>
+<br>
+
+<p class="lead">Seleccionar fecha</p>
+
+<form action="/turnos/" method="get">
+    {{ form.as_p }}
+    <input type="submit" value="Aceptar" />
+</form>
+{% endblock %}
