@@ -3,33 +3,19 @@
 {% block content %}
 
 <br>
-<br>
-<br>
-<br>
 
-<p class="lead">Se realizará la siguiente reserva:</p><br>
+<p class="lead">Se realizará la siguiente reserva:</p>
 
-<table style="width:50%">
-  <tr>
-    <td>Fecha:</td>
-    <td>{{ date }}</td>
-  </tr>
-  <tr>
-    <td>Duracion:</td>
-    <td>{{ tiempo }} Hs.</td>
-  </tr>
-  <tr>
-    <td>Inicio:</td>
-    <td>{{ desde_str }}</td>
-  </tr>
-  <tr>
-    <td>Fin:</td>
-    <td>{{ hasta_str }}</td>
-  </tr>
-</table>
+<form action="." method="post">
+    {% csrf_token %}
+    Sala: <input type="text" name="sala" value='Bordo' readonly style ="border: none"> <br>
+    Usuario: <input type="text" name="user" value='User' readonly style ="border: none"> <br>
+    Fecha: <input type="text" name="fecha" value="{{ date }}" readonly style ="border: none"> <br>
+    Duracion: <input type="text" name="duracion" value="{{ tiempo }}" readonly style ="border: none"> <br>
+    Inicio: <input type="text" name="inicio" value="{{ desde_str }}" readonly style ="border: none"> <br>
+    Fin: <input type="text" name="fin" value="{{ hasta_str }}" readonly style ="border: none"> <br><br>
+    <input type="submit" value="Confirmar Reserva" />
+</form>
 
-<br>
-<br>
-<input type="button" onclick="location.href='/reserva_confirmada/';" value="Confirmar Reserva" />
 
 {% endblock %}
