@@ -38,7 +38,7 @@ def turnos(request):
     )
 
     return render_to_response(
-        'selector_turnos.html',
+        'turnos.html',
         context={
             "active": "reserva",
             "horarios": turnos,
@@ -90,4 +90,4 @@ def confirmada(request):
         d += 30
         reserva.save()
 
-    return render_to_response('reserva_confirmada.html', context={"active": "reserva_confirmada"})
+    return render_to_response('confirmada.html', context={"active": "reserva_confirmada"})
