@@ -37,9 +37,10 @@ class Horarios(models.Model):
 
 
 class Reserva(models.Model):
-    sala = models.ForeignKey(Sala, on_delete=models.SET_NULL, null=True)
+    sala = models.CharField(max_length=50)
     dia = models.DateField()
-    horario = models.TimeField()
+    hora_inicio = models.TimeField()
+    hora_fin = models.TimeField()
     usuario = models.CharField(max_length=100)
 
     def __str__(self):

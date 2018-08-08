@@ -1,7 +1,5 @@
 from django.conf.urls import url
 from . import views
-from django.views.generic.base import TemplateView
-
 
 urlpatterns = [
     url(r'^$', views.inicio, name='inicio'),
@@ -10,6 +8,4 @@ urlpatterns = [
     url(r'^reserva/turnos/$', views.turnos),
     url(r'^reserva/confirmacion/$', views.confirmacion),
     url(r'^reserva/confirmada/$', views.confirmada),
-
-    ]
-
+]
