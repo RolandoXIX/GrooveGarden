@@ -5,7 +5,10 @@
 <br>
 <p class="lead">Seleccionar turnos para el dia {{ date }}</p>
 
-<form action="." method="get">
+<form action="/reserva/confirmacion/" method="POST">
+    
+    <input type="hidden" name="date" value="{{ date }}">
+
     <ul>
         {% for x, y in horarios %}
         <input type="checkbox" name={{ x }} value={{ y }}> {{ y }}<br />

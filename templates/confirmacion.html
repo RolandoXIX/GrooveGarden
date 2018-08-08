@@ -6,7 +6,7 @@
 
 <p class="lead">Se realizará la siguiente reserva:</p>
 
-<form action="." method="post">
+<form action="/reserva/confirmada/" method="post">
     {% csrf_token %}
     Sala: <input type="text" name="sala" value='Bordo' readonly style ="border: none"> <br>
     Usuario: <input type="text" name="user" value='User' readonly style ="border: none"> <br>
