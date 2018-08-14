@@ -10,4 +10,4 @@ admin.site.register(Horarios)
 
 @admin.register(Reserva)
 class ReservaAdmin(admin.ModelAdmin):
-    list_display = ('sala', 'dia', 'hora_inicio', 'hora_fin')
+    list_display = ('sala', 'reservation_date', 'hora_inicio', 'hora_fin')

@@ -38,12 +38,12 @@ class Horarios(models.Model):
 
 class Reserva(models.Model):
     sala = models.CharField(max_length=50)
-    dia = models.DateField()
-    hora_inicio = models.TimeField()
-    hora_fin = models.TimeField()
+    reservation_date = models.DateField()
+    hora_inicio = models.DateTimeField()
+    hora_fin = models.DateTimeField()
     usuario = models.CharField(max_length=100)
 
     def __str__(self):
-        return '%s - %s' % (self.sala, self.dia)
+        return self.sala
 
 

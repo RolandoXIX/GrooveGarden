@@ -3,16 +3,23 @@
 {% block content %}
 
 <br>
-<p class="lead">Seleccionar turnos para el dia {{ date }}</p>
+<p class="lead">Seleccionar turnos para el <strong>{{ date | date:"l d \d\e F \d\e Y" }}</strong></p>
 
 <form action="/reserva/confirmacion/" method="POST">
-    <input type="hidden" name="date" value="{{ date }}">
+    <input type="hidden" name="date" value="{{ date | date:'c' }}">
     <ul>
-        {% for x, y in horarios %}
-        <input type="checkbox" name={{ x }} value={{ y }}> {{ y }}<br/>
+        {% for x,y in horarios %}
+            {% if y == "disabled" %}
+                <label for=x><strike><small>{{ x |time:"H:i"}}</small></strike></label>
+                <input type="checkbox" name="{{ x }}" value="{{ x }}" id="{{ x }}" disabled><br/>
+            {% else %}
+                <label for=x><small>{{ x |time:"H:i"}}</small></label>
+                <input type="checkbox" name="{{ x | date:'c' }}" value="{{ x | date:'c' }}" id="{{ x }}" ><br/>
+            {% endif %}
         {% endfor %}
     </ul>
     <input type="submit" value="Aceptar" />
 </form>
+<br/>
 
 {% endblock %}

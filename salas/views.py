@@ -2,6 +2,12 @@ from django.shortcuts import render_to_response, render
 import datetime
 from .models import Reserva
 from django.views.decorators.csrf import csrf_exempt
+from dateutil import parser
+
+# Parametros
+first_schedule = datetime.time(hour=12, minute=0)
+final_schedule = datetime.time(hour=1, minute=0)
+interval = 30
 
 
 def inicio(request):
@@ -15,76 +21,86 @@ def promociones(request):
 def reserva(request):
     return render_to_response(
         'form_reserva.html',
+        context={
+            "active": "reserva",
+        }
     )
 
 
 @csrf_exempt
 def turnos(request):
-    date = datetime.datetime.strptime(request.POST['fecha'], '%Y-%m-%d').__format__('%d/%m/%Y')
-    turn_options = (
-        ('12:00', '12:00'),
-        ('12:30', '12:30'),
-        ('13:00', '13:00'),
-        ('13:30', '13:30'),
-        ('14:00', '14:00'),
-        ('14:30', '14:30'),
-        ('15:00', '15:00'),
-        ('15:30', '15:30'),
-        ('16:00', '16:00'),
-        ('16:30', '16:30'),
-        ('17:00', '17:00'),
-        ('17:30', '17:30'),
-        ('18:00', '18:00'),
-        ('18:30', '18:30'),
-        ('19:00', '19:00'),
-        ('19:30', '19:30'),
-    )
+    date = datetime.datetime.strptime(request.POST['fecha'], '%Y-%m-%d').date()
+
+    first_schedule_date = datetime.datetime.combine(date, first_schedule)
+    next_date = date + datetime.timedelta(days=1)
+    final_schedule_date = datetime.datetime.combine(next_date, final_schedule)
+
+    d = Reserva.objects.filter(reservation_date=date)
+    disabled = []
+    for r in d:
+        desde = r.hora_inicio
+        to = r.hora_fin
+        while desde != to:
+            disabled.append(desde)
+            desde += datetime.timedelta(minutes=interval)
+
+    schedule_options = []
+    h = first_schedule_date
+    while h != final_schedule_date:
+        if h in disabled:
+            schedule_options.append((h, 'disabled'),)
+        else:
+            schedule_options.append((h, 'enabled'),)
+        h += datetime.timedelta(minutes=interval)
 
     return render_to_response(
         'turnos.html',
         context={
             "active": "reserva",
-            "horarios": turn_options,
-            "date": date,
+            "horarios": schedule_options,
+            "date": date
         }
     )
 
 
 @csrf_exempt
 def confirmacion(request):
-    horarios = dict(request.POST)
-    date = horarios.pop("date")[0]
-    desde = datetime.timedelta(hours=12, minutes=00)
-    desde_str = str(desde)[0:5]
+    rdict = request.POST.dict()
+    rdate = rdict.pop('date')
+    date = parser.parse(rdate).date()
+    rlist = []
+    for t in rdict:
+        date_parse = parser.parse(t)
+        rlist.append(date_parse)
 
-    while desde_str not in horarios:
-        desde += datetime.timedelta(minutes=30)
-        desde_str = str(desde)[0:5]
+    first_schedule_date = datetime.datetime.combine(date, first_schedule)
 
-    tiempo = (len(horarios) - 1) / 2
-    hasta = desde + datetime.timedelta(hours=tiempo)
-    hasta_str = str(hasta)[0:5]
+    while first_schedule_date not in rlist:
+        first_schedule_date += datetime.timedelta(minutes=interval)
+
+    duration_hours = len(rdict) * interval / 60
+    final_schedule_date = first_schedule_date + datetime.timedelta(hours=duration_hours)
 
     return render_to_response(
         'confirmacion.html',
         context={
-            "active": "reserva_confirmada",
+            "active": "reserva",
             "date": date,
-            "tiempo": tiempo,
-            "desde_str": desde_str,
-            "hasta_str": hasta_str
+            "tiempo": duration_hours,
+            "from": first_schedule_date,
+            "to": final_schedule_date
         }
     )
 
 
 @csrf_exempt
 def confirmada(request):
-    reserva = Reserva()
-    reserva.dia = datetime.datetime.strptime(request.POST['fecha'], '%d/%m/%Y').date()
-    reserva.hora_inicio = request.POST.get('inicio')
-    reserva.hora_fin = request.POST.get('fin')
-    reserva.sala = request.POST.get('sala')
-    reserva.usuario = request.POST.get('user')
-    reserva.save()
+    reservation = Reserva()
+    reservation.reservation_date = parser.parse(request.POST.get('date'))
+    reservation.hora_inicio = parser.parse(request.POST.get('from'))
+    reservation.hora_fin = parser.parse(request.POST.get('to'))
+    reservation.sala = request.POST.get('sala')
+    reservation.usuario = request.POST.get('user')
+    reservation.save()
 
-    return render_to_response('confirmada.html', context={"active": "reserva_confirmada"})
+    return render_to_response('confirmada.html', context={"active": "reserva"})

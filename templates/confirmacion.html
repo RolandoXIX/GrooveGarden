@@ -10,10 +10,10 @@
     {% csrf_token %}
     Sala: <input type="text" name="sala" value='Bordo' readonly style ="border: none"> <br>
     Usuario: <input type="text" name="user" value='User' readonly style ="border: none"> <br>
-    Fecha: <input type="text" name="fecha" value="{{ date }}" readonly style ="border: none"> <br>
-    Duracion: <input type="text" name="duracion" value="{{ tiempo }}" readonly style ="border: none"> <br>
-    Inicio: <input type="text" name="inicio" value="{{ desde_str }}" readonly style ="border: none"> <br>
-    Fin: <input type="text" name="fin" value="{{ hasta_str }}" readonly style ="border: none"> <br><br>
+    Fecha: <input type="text" name="date" value="{{ date | date:'d/m/Y' }}" readonly style ="border: none"> <br>
+    Duracion: <input type="text" name="duration_hours" value="{{ tiempo }}" readonly style ="border: none"> <br>
+    Hora Inicio: {{ from | time:'H:i'}} <input type="hidden" name="from" value="{{ from | date:'c' }}" readonly style ="border: none"> <br>
+    Hora Fin: {{ to | time:'H:i'}} <input type="hidden" name="to" value="{{ to | date:'c'}}" readonly style ="border: none"> <br><br>
     <input type="submit" value="Confirmar Reserva" />
 </form>
 
