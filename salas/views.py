@@ -18,47 +18,44 @@ def promociones(request):
     return render_to_response('promociones.html', context={"active": "promociones"})
 
 
-def reserva(request):
-    return render_to_response(
-        'form_reserva.html',
-        context={
-            "active": "reserva",
-        }
-    )
-
-
 @csrf_exempt
-def turnos(request):
-    date = datetime.datetime.strptime(request.POST['fecha'], '%Y-%m-%d').date()
-
-    first_schedule_date = datetime.datetime.combine(date, first_schedule)
-    next_date = date + datetime.timedelta(days=1)
-    final_schedule_date = datetime.datetime.combine(next_date, final_schedule)
-
-    d = Reserva.objects.filter(reservation_date=date)
-    disabled = []
-    for r in d:
-        desde = r.hora_inicio
-        to = r.hora_fin
-        while desde != to:
-            disabled.append(desde)
-            desde += datetime.timedelta(minutes=interval)
-
+def reserva(request):
     schedule_options = []
-    h = first_schedule_date
-    while h != final_schedule_date:
-        if h in disabled:
-            schedule_options.append((h, 'disabled'),)
-        else:
-            schedule_options.append((h, 'enabled'),)
-        h += datetime.timedelta(minutes=interval)
+    date = []
+    action = 'Seleccionar'
+
+    if request.POST:
+        action = 'Actualizar'
+        date = datetime.datetime.strptime(request.POST['fecha'], '%Y-%m-%d').date()
+
+        first_schedule_date = datetime.datetime.combine(date, first_schedule)
+        next_date = date + datetime.timedelta(days=1)
+        final_schedule_date = datetime.datetime.combine(next_date, final_schedule)
+
+        d = Reserva.objects.filter(reservation_date=date)
+        disabled = []
+        for r in d:
+            desde = r.hora_inicio
+            to = r.hora_fin
+            while desde != to:
+                disabled.append(desde)
+                desde += datetime.timedelta(minutes=interval)
+
+        h = first_schedule_date
+        while h != final_schedule_date:
+            if h in disabled:
+                schedule_options.append((h, 'disabled'),)
+            else:
+                schedule_options.append((h, 'enabled'),)
+            h += datetime.timedelta(minutes=interval)
 
     return render_to_response(
-        'turnos.html',
+        'reserva.html',
         context={
             "active": "reserva",
             "horarios": schedule_options,
-            "date": date
+            "date": date,
+            "action": action
         }
     )
 
