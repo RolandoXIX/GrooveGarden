@@ -1,20 +1,20 @@
 {% extends "base.html" %}
 
 {% block content %}
-
 <br>
 
-<form action="." method="POST">
+{% if not post %}
+<form action="." method="GET">
     <input type="date" name="fecha" value="{{ date | date:'Y-m-d' }}"  required>
     <input type="submit" value="{{ action }}">
 </form>
+{% endif %}
 
 {% if horarios %}
-
 <br>
 <p class="lead">Seleccionar turnos para el <strong>{{ date | date:"l d \d\e F \d\e Y" }}</strong></p>
 
-<form action="/reserva/confirmacion/" method="POST">
+<form action="." method="POST">
     <input type="hidden" name="date" value="{{ date | date:'c' }}">
     <ul>
         {% for x,y in horarios %}
@@ -30,7 +30,20 @@
     <input type="submit" value="Aceptar" />
 </form>
 <br/>
+{% endif %}
 
+{% if post %}
+<p class="lead">Se realizará la siguiente reserva:</p>
+<form action="/reserva/confirmada/" method="post">
+    {% csrf_token %}
+    Sala: <input type="text" name="sala" value='Bordo' readonly style ="border: none"> <br>
+    Usuario: <input type="text" name="user" value='User' readonly style ="border: none"> <br>
+    Fecha: <input type="text" name="date" value="{{ date | date:'d/m/Y' }}" readonly style ="border: none"> <br>
+    Duracion: <input type="text" name="duration_hours" value="{{ tiempo }}" readonly style ="border: none"> <br>
+    Hora Inicio: {{ from | time:'H:i'}} <input type="hidden" name="from" value="{{ from | date:'c' }}" readonly style ="border: none"> <br>
+    Hora Fin: {{ to | time:'H:i'}} <input type="hidden" name="to" value="{{ to | date:'c'}}" readonly style ="border: none"> <br><br>
+    <input type="submit" value="Confirmar Reserva" />
+</form>
 {% endif %}
 
 {% endblock %}

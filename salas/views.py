@@ -1,4 +1,4 @@
-from django.shortcuts import render_to_response, render
+from django.shortcuts import render_to_response
 import datetime
 from .models import Reserva
 from django.views.decorators.csrf import csrf_exempt
@@ -8,6 +8,7 @@ from dateutil import parser
 first_schedule = datetime.time(hour=12, minute=0)
 final_schedule = datetime.time(hour=1, minute=0)
 interval = 30
+min_reserva = 60
 
 
 def inicio(request):
@@ -23,10 +24,14 @@ def reserva(request):
     schedule_options = []
     date = []
     action = 'Seleccionar'
+    duration_hours = []
+    first_schedule_date = []
+    final_schedule_date = []
+    post = []
 
-    if request.POST:
+    if request.GET:
         action = 'Actualizar'
-        date = datetime.datetime.strptime(request.POST['fecha'], '%Y-%m-%d').date()
+        date = datetime.datetime.strptime(request.GET['fecha'], '%Y-%m-%d').date()
 
         first_schedule_date = datetime.datetime.combine(date, first_schedule)
         next_date = date + datetime.timedelta(days=1)
@@ -49,46 +54,37 @@ def reserva(request):
                 schedule_options.append((h, 'enabled'),)
             h += datetime.timedelta(minutes=interval)
 
+    if request.POST:
+        post = "post"
+        rdict = request.POST.dict()
+        rdate = rdict.pop('date')
+        date = parser.parse(rdate).date()
+        rlist = []
+        for t in rdict:
+            date_parse = parser.parse(t)
+            rlist.append(date_parse)
+
+        first_schedule_date = datetime.datetime.combine(date, first_schedule)
+
+        while first_schedule_date not in rlist:
+            first_schedule_date += datetime.timedelta(minutes=interval)
+
+        duration_hours = len(rdict) * interval / 60
+        final_schedule_date = first_schedule_date + datetime.timedelta(hours=duration_hours)
+
     return render_to_response(
         'reserva.html',
         context={
             "active": "reserva",
             "horarios": schedule_options,
             "date": date,
-            "action": action
-        }
-    )
-
-
-@csrf_exempt
-def confirmacion(request):
-    rdict = request.POST.dict()
-    rdate = rdict.pop('date')
-    date = parser.parse(rdate).date()
-    rlist = []
-    for t in rdict:
-        date_parse = parser.parse(t)
-        rlist.append(date_parse)
-
-    first_schedule_date = datetime.datetime.combine(date, first_schedule)
-
-    while first_schedule_date not in rlist:
-        first_schedule_date += datetime.timedelta(minutes=interval)
-
-    duration_hours = len(rdict) * interval / 60
-    final_schedule_date = first_schedule_date + datetime.timedelta(hours=duration_hours)
-
-    return render_to_response(
-        'confirmacion.html',
-        context={
-            "active": "reserva",
-            "date": date,
+            "action": action,
             "tiempo": duration_hours,
             "from": first_schedule_date,
-            "to": final_schedule_date
+            "to": final_schedule_date,
+            "post": post,
         }
     )
-
 
 @csrf_exempt
 def confirmada(request):
