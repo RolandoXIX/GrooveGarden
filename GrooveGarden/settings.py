@@ -31,6 +31,7 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    "sslserver",
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -125,3 +126,9 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, "static"),
 ]
+
+
+GOOGLE_CALENDAR_CLIENT_ID = '828543267006-scihaocr3lbiq8pg9d0tsvjshccv8emc.apps.googleusercontent.com'
+GOOGLE_CALENDAR_SECRET = 'bJkZRIkr72sdUFsh3hD7hTif'
+
+

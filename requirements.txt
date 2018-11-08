@@ -1,4 +1,6 @@
 Django==2.0.7
 pytz==2018.5
 python-dateutil
-
+google-api-python-client
+oauth2client
+django-sslserver
