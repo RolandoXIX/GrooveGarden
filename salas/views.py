@@ -1,3 +1,4 @@
+from __future__ import print_function
 from django.shortcuts import render_to_response
 import datetime
 from .models import Reserva
@@ -8,7 +9,8 @@ import google_auth_oauthlib.flow
 import googleapiclient.discovery 
 from django.http import JsonResponse
 import google.oauth2.credentials
-import googleapiclient.discovery
+from oauth2client import file, client, tools
+
 
 
 # Parametros
@@ -113,15 +115,25 @@ def sala(request):
 @csrf_exempt
 def reservations(request):
 
+    credentials_info = {'token': 'ya29.GltOBvriNoRcOGgILK5zbno3f-NxZvcqaSRQzSTEI1MFR_0olb0BCX66ysHDxjwd_iT5d_YzJ2LbVi1ogdIsMMQ5C7ftzM9QP8RByWO7HxgF1f3bx0yzo6EaDvqI', 'refresh_token': '1/_x4Yv7RM-IlVNrZjmH0dG7wVzEA15-UtTdyLQlhlAFlDJ1f38w7RHoYuXeCKSQIu', 'token_uri': 'https://www.googleapis.com/oauth2/v3/token', 'client_id': '828543267006-scihaocr3lbiq8pg9d0tsvjshccv8emc.apps.googleusercontent.com', 'client_secret': 'bJkZRIkr72sdUFsh3hD7hTif', 'scopes': ['https://www.googleapis.com/auth/calendar']}
+    api_credentials = google.oauth2.credentials.Credentials(**credentials_info)
+    calendar_api = googleapiclient.discovery.build('calendar', 'v3', credentials=api_credentials)
+
     if request.POST:
-        reservation = Reserva()
-        reservation.reservation_date = parser.parse(request.POST.get('start'))
-        reservation.hora_inicio = parser.parse(request.POST.get('start'))
-        reservation.hora_fin = parser.parse(request.POST.get('end'))
-        reservation.sala = request.POST.get('title')
-        reservation.usuario = 'user'
-        reservation.save()
-        return ()
+        event = {
+            'summary': request.POST.get('title'),
+            'start': {
+                'dateTime': request.POST.get("start"),
+                'timeZone': 'America/Los_Angeles',
+            },
+            'end': {
+                'dateTime': request.POST.get("end"),
+                'timeZone': 'America/Los_Angeles',
+            },
+        }
+        event = calendar_api.events().insert(calendarId='ma2shcfl1bmfjrstv9bu732bn4@group.calendar.google.com', body=event)
+        event.execute()
+        return JsonResponse({})
 
     reservations = []
 
@@ -129,9 +141,6 @@ def reservations(request):
     to_date = datetime.datetime.fromtimestamp(int(request.GET.get("to"))/ 1e3).isoformat() + 'Z'
 
     # This is going to be saved in SALA object, harcoded now...
-    credentials_info = {'token': 'ya29.GltOBvriNoRcOGgILK5zbno3f-NxZvcqaSRQzSTEI1MFR_0olb0BCX66ysHDxjwd_iT5d_YzJ2LbVi1ogdIsMMQ5C7ftzM9QP8RByWO7HxgF1f3bx0yzo6EaDvqI', 'refresh_token': '1/_x4Yv7RM-IlVNrZjmH0dG7wVzEA15-UtTdyLQlhlAFlDJ1f38w7RHoYuXeCKSQIu', 'token_uri': 'https://www.googleapis.com/oauth2/v3/token', 'client_id': '828543267006-scihaocr3lbiq8pg9d0tsvjshccv8emc.apps.googleusercontent.com', 'client_secret': 'bJkZRIkr72sdUFsh3hD7hTif', 'scopes': ['https://www.googleapis.com/auth/calendar']}
-    api_credentials = google.oauth2.credentials.Credentials(**credentials_info) 
-    calendar_api = googleapiclient.discovery.build('calendar', 'v3', credentials=api_credentials) 
     events_result = calendar_api.events().list(calendarId='ma2shcfl1bmfjrstv9bu732bn4@group.calendar.google.com', timeMin=from_date, timeMax=to_date,
                             maxResults=2500, singleEvents=True,
                             orderBy='startTime').execute()
@@ -146,3 +155,4 @@ def reservations(request):
         })
 
     return JsonResponse({"events":reservations})
+
