@@ -119,8 +119,9 @@ def reservations(request):
         reservation.hora_inicio = parser.parse(request.POST.get('start'))
         reservation.hora_fin = parser.parse(request.POST.get('end'))
         reservation.sala = request.POST.get('title')
-        reservation.usuario = request.POST.get('user')
+        reservation.usuario = 'user'
         reservation.save()
+        return ()
 
     reservations = []
 
