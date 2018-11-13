@@ -26,11 +26,11 @@
         if (title) {
           eventData = {
             title: title,
-            start: start,
-            end: end
+            start: start.format(),
+            end: end.format()
           };
           $('#calendar').fullCalendar('renderEvent', eventData, true); // stick? = true;
-          $.post("/reservation", eventData);
+          $.post("/reservations/", eventData);
         }
         $('#calendar').fullCalendar('unselect');
       },

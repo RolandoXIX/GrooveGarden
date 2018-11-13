@@ -110,7 +110,7 @@ def confirmada(request):
 def sala(request):
     return render_to_response('sala.html', context={})
 
-
+@csrf_exempt
 def reservations(request):
 
     if request.POST:
