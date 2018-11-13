@@ -10,7 +10,6 @@
 
 <script>
   $(document).ready(function() {
-
     $('#calendar').fullCalendar({
       header: {
         left: 'prev,next today',
@@ -30,7 +29,8 @@
             start: start,
             end: end
           };
-          $('#calendar').fullCalendar('renderEvent', eventData, true); // stick? = true
+          $('#calendar').fullCalendar('renderEvent', eventData, true); // stick? = true;
+          $.post("/reservation", eventData);
         }
         $('#calendar').fullCalendar('unselect');
       },
@@ -40,8 +40,7 @@
           $.get("/reservations/?from="+start+"&to="+end, function(response){
             callback(response.events)
           },'json');
-      }
-
+      },
     });
 
   });

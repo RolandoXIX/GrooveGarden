@@ -3,12 +3,13 @@ import datetime
 from .models import Reserva
 from django.views.decorators.csrf import csrf_exempt
 from dateutil import parser
-
-import google.oauth2.credentials 
+import google.oauth2.credentials
 import google_auth_oauthlib.flow 
 import googleapiclient.discovery 
-
 from django.http import JsonResponse
+import google.oauth2.credentials
+import googleapiclient.discovery
+
 
 # Parametros
 first_schedule = datetime.time(hour=12, minute=0)
@@ -16,10 +17,6 @@ final_schedule = datetime.time(hour=1, minute=0)
 interval = 30
 min_reserva = 60
 
-
-import google.oauth2.credentials
-import google_auth_oauthlib.flow
-import googleapiclient.discovery
 
 def inicio(request):
     return render_to_response('inicio.html', context={"active":"inicio"})
@@ -96,6 +93,7 @@ def reserva(request):
         }
     )
 
+
 @csrf_exempt
 def confirmada(request):
     reservation = Reserva()
@@ -108,10 +106,22 @@ def confirmada(request):
 
     return render_to_response('confirmada.html', context={"active": "reserva"})
 
-def sala(request):    
+
+def sala(request):
     return render_to_response('sala.html', context={})
 
+
 def reservations(request):
+
+    if request.POST:
+        reservation = Reserva()
+        reservation.reservation_date = parser.parse(request.POST.get('start'))
+        reservation.hora_inicio = parser.parse(request.POST.get('start'))
+        reservation.hora_fin = parser.parse(request.POST.get('end'))
+        reservation.sala = request.POST.get('title')
+        reservation.usuario = request.POST.get('user')
+        reservation.save()
+
     reservations = []
 
     from_date = datetime.datetime.fromtimestamp(int(request.GET.get("from"))/ 1e3).isoformat() + 'Z'
