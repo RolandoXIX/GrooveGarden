@@ -1,16 +1,12 @@
-from __future__ import print_function
 from django.shortcuts import render_to_response
 import datetime
 from .models import Reserva
 from django.views.decorators.csrf import csrf_exempt
 from dateutil import parser
 import google.oauth2.credentials
-import google_auth_oauthlib.flow 
-import googleapiclient.discovery 
+import googleapiclient.discovery
 from django.http import JsonResponse
 import google.oauth2.credentials
-from oauth2client import file, client, tools
-
 
 
 # Parametros
@@ -112,10 +108,17 @@ def confirmada(request):
 def sala(request):
     return render_to_response('sala.html', context={})
 
+
 @csrf_exempt
 def reservations(request):
 
-    credentials_info = {'token': 'ya29.GltOBvriNoRcOGgILK5zbno3f-NxZvcqaSRQzSTEI1MFR_0olb0BCX66ysHDxjwd_iT5d_YzJ2LbVi1ogdIsMMQ5C7ftzM9QP8RByWO7HxgF1f3bx0yzo6EaDvqI', 'refresh_token': '1/_x4Yv7RM-IlVNrZjmH0dG7wVzEA15-UtTdyLQlhlAFlDJ1f38w7RHoYuXeCKSQIu', 'token_uri': 'https://www.googleapis.com/oauth2/v3/token', 'client_id': '828543267006-scihaocr3lbiq8pg9d0tsvjshccv8emc.apps.googleusercontent.com', 'client_secret': 'bJkZRIkr72sdUFsh3hD7hTif', 'scopes': ['https://www.googleapis.com/auth/calendar']}
+    credentials_info = {'token': 'ya29.GltOBvriNoRcOGgILK5zbno3f-NxZvcqaSRQzSTEI1MFR_0olb0BCX66ysHDxjwd_iT5d_YzJ2LbVi1ogdIsMMQ5C7ftzM9QP8RByWO7HxgF1f3bx0yzo6EaDvqI',
+                        'refresh_token': '1/_x4Yv7RM-IlVNrZjmH0dG7wVzEA15-UtTdyLQlhlAFlDJ1f38w7RHoYuXeCKSQIu',
+                        'token_uri': 'https://www.googleapis.com/oauth2/v3/token',
+                        'client_id': '828543267006-scihaocr3lbiq8pg9d0tsvjshccv8emc.apps.googleusercontent.com',
+                        'client_secret': 'bJkZRIkr72sdUFsh3hD7hTif',
+                        'scopes': ['https://www.googleapis.com/auth/calendar']}
+
     api_credentials = google.oauth2.credentials.Credentials(**credentials_info)
     calendar_api = googleapiclient.discovery.build('calendar', 'v3', credentials=api_credentials)
 
@@ -131,7 +134,8 @@ def reservations(request):
                 'timeZone': 'America/Los_Angeles',
             },
         }
-        event = calendar_api.events().insert(calendarId='ma2shcfl1bmfjrstv9bu732bn4@group.calendar.google.com', body=event)
+        event = calendar_api.events().insert(calendarId='ma2shcfl1bmfjrstv9bu732bn4@group.calendar.google.com',
+                                             body=event)
         event.execute()
         return JsonResponse({})
 
@@ -141,9 +145,10 @@ def reservations(request):
     to_date = datetime.datetime.fromtimestamp(int(request.GET.get("to"))/ 1e3).isoformat() + 'Z'
 
     # This is going to be saved in SALA object, harcoded now...
-    events_result = calendar_api.events().list(calendarId='ma2shcfl1bmfjrstv9bu732bn4@group.calendar.google.com', timeMin=from_date, timeMax=to_date,
-                            maxResults=2500, singleEvents=True,
-                            orderBy='startTime').execute()
+    events_result = calendar_api.events().list(calendarId='ma2shcfl1bmfjrstv9bu732bn4@group.calendar.google.com',
+                                               timeMin=from_date, timeMax=to_date,
+                                               maxResults=2500, singleEvents=True,
+                                               orderBy='startTime').execute()
 
     for event in events_result.get('items', []):
 
